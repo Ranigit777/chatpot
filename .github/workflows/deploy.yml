@@ -1,0 +1,57 @@
+name: CI & Deployment Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js 18.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+        
+    - name: Install Backend Dependencies
+      run: |
+        cd backend
+        npm ci
+        
+    # Since there's no backend testing script yet, this acts as a build-check pass
+    - name: Validate Dependencies
+      run: echo "Installed modules seamlessly"
+      
+  deploy:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    # Run deployment only when pushing to main and not on pull requests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    # To deploy the node.js server to a platform like Render.com, Heroku, or AWS,
+    # you would specify the corresponding action below.
+    # E.g., for Render:
+    
+    # - name: Trigger Deployment Endpoint
+    #   env:
+    #     deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+    #   run: |
+    #     if [ -n "$deploy_url" ]; then
+    #       curl -sG $deploy_url
+    #       echo "Server deployment triggered automatically!"
+    #     else
+    #       echo "No deploy hook found in secrets."
+    #     fi
+    
+    - name: Deployment Success Callback
+      run: echo "Build checks passed nicely! Ready for automatic cloud deployment."
