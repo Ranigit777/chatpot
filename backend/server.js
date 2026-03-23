@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { Client } = require('@gradio/client');
 require('dotenv').config();
 
@@ -8,6 +9,9 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+
+// Serve static frontend files
+app.use(express.static(path.join(__dirname, '../frontend')));
 
 app.post('/api/chat', async (req, res) => {
     try {

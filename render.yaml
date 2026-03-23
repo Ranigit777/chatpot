@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: chatpot-app
+    env: node
+    plan: free
+    buildCommand: "cd backend && npm install"
+    startCommand: "cd backend && node server.js"
+    envVars:
+      - key: NODE_VERSION
+        value: 18.x
+      - key: HF_TOKEN
+        sync: false
